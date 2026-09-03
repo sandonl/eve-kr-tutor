@@ -25,7 +25,7 @@ const getProjectHeaders = (): Record<string, string> => {
 export default defineMcpClientConnection({
   url: "https://mcp.supermemory.ai/mcp",
   description:
-    "The learner's long-term Korean study memory. Recall vocabulary and expressions already covered so they are not taught again as new; also track goals, preferences, recurring mistakes, and mastered material.",
+    "The learner's long-term Korean study memory. Recall Korean words, expressions, and grammar structures with their Unseen, Learning, or Seen state so Learning items get more practice and Seen items are not proactively recommended; also track goals, preferences, recurring mistakes, and broader learning progress.",
   auth: {
     getToken: async () => ({ token: requireSupermemoryApiKey() }),
   },
