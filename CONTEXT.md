@@ -23,3 +23,11 @@ _Avoid_: Mastered, known; those imply a stronger level of command than this stat
 **Learning pile**:
 The set of language items currently in Learning state.
 _Avoid_: Vocabulary list when grammar structures are included.
+
+**Sentence mine**:
+A short, source-linked Korean example selected for natural everyday usage and teaching value.
+_Avoid_: Full transcript or article excerpt.
+
+**Sentence digest**:
+A compact set of sentence mines prepared for one day's lesson or review.
+_Avoid_: An unfiltered content feed.

@@ -49,10 +49,11 @@ Try:
 
 1. `카페에서 주문하는 상황으로 자연스럽게 대화해 보자.`
 2. `내 표현을 더 자연스럽게 고쳐 줘.`
-3. `Remember the new words we covered today so you don't teach them as new next time.`
-4. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
+3. `/sentence-mine` to find a few source-linked, everyday Korean examples.
+4. `Remember the new words we covered today so you don't teach them as new next time.`
+5. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
 
-The third prompt should pause before Supermemory writes anything. Future lessons search that memory before selecting new material.
+The memory prompt should pause before Supermemory writes anything. Future lessons search that memory before selecting new material.
 
 ## Project shape
 
@@ -63,7 +64,8 @@ agent/
 ├── channels/eve.ts             local TUI and HTTP channel
 ├── connections/supermemory.ts  hosted Supermemory MCP connection
 ├── skills/guided-lesson/       lesson procedure loaded on demand
-└── tools/                       dangerous default tools disabled
+├── skills/sentence-mine/       source-linked Korean sentence mining
+└── tools/                       dangerous defaults disabled; web tools enabled for sentence mining
 evals/                            behavioural checks
 docs/eve-deep-dive.md            notes on Eve's architecture
 ```

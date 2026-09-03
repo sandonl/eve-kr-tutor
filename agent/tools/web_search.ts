@@ -1,3 +1,3 @@
-import { disableTool } from "eve/tools";
+import { webSearch } from "eve/tools/web_search";
 
-export default disableTool();
+export default webSearch({ provider: "exa" });
