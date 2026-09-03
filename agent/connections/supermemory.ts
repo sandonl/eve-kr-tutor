@@ -1,11 +1,11 @@
 import { defineMcpClientConnection } from "eve/connections";
 
 const requireSupermemoryApiKey = (): string => {
-  const apiKey = process.env.SUPERMEMORY_API_KEY;
+  const apiKey = process.env.SUPERMEMORY_API_KEY?.trim();
 
-  if (typeof apiKey !== "string" || apiKey.trim().length === 0) {
+  if (!apiKey) {
     throw new Error(
-      "SUPERMEMORY_API_KEY is required. Copy .env.example to .env and add your Supermemory API key.",
+      "SUPERMEMORY_API_KEY is required. Set it in .env.local for local development or in the deployment environment.",
     );
   }
 
@@ -13,9 +13,9 @@ const requireSupermemoryApiKey = (): string => {
 };
 
 const getProjectHeaders = (): Record<string, string> => {
-  const projectId = process.env.SUPERMEMORY_PROJECT_ID;
+  const projectId = process.env.SUPERMEMORY_PROJECT_ID?.trim();
 
-  if (typeof projectId !== "string" || projectId.trim().length === 0) {
+  if (!projectId) {
     return {};
   }
 
