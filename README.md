@@ -79,7 +79,7 @@ Try:
 4. `Remember the new words we covered today so you don't teach them as new next time.`
 5. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
 
-The memory prompt should pause before Supermemory writes anything. Future lessons search that memory before selecting new material.
+Compact Supermemory writes are automatically approved for this private tutor. Future lessons search that memory before selecting new material, including the learner's saved 2k frequency-list preference.
 
 ## Project shape
 

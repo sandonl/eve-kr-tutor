@@ -162,8 +162,9 @@ async function generateYoutubeVideoExcerpt(
             text: [
               `Return up to ${MAX_LINES} short, consecutive Korean lines that are visibly displayed as on-screen captions or subtitles in one nearby moment of this public YouTube video.`,
               "Prefer a compact exchange or a sentence with adjacent context. Preserve the source order and do not combine distant moments.",
-              "Read the visible caption text only. Return each line in full with its original punctuation; do not add ellipses, truncate, transcribe speech from audio, invent, translate, paraphrase, or explain the lines.",
+              "Read the visible caption text only. Return each line in full with its original Hangul and punctuation; do not romanize or transliterate, add pronunciation spellings, add ellipses, truncate, transcribe speech from audio, invent, translate, paraphrase, or explain the lines.",
               "If a caption is only partly visible or clearly incomplete, omit it rather than guessing the missing text.",
+              "If the visible text is romanized, mixed-script, or not confidently readable as Korean Hangul, omit it and return an empty lines array if no usable Hangul caption remains.",
               "If you cannot confidently identify visible Korean caption or subtitle text, return an empty lines array.",
             ].join("\n"),
           },
