@@ -13,7 +13,7 @@ function rejectsUnverifiedEnglish(value: unknown): boolean {
 
   return [
     "language_unverified",
-    "no_caption_track",
+    "no_visible_captions",
     "blocked",
     "timeout",
     "upstream_error",
@@ -22,16 +22,16 @@ function rejectsUnverifiedEnglish(value: unknown): boolean {
 
 export default defineEval({
   description:
-    "An English caption track is never accepted as verified Korean sentence-mining material.",
+    "Non-Korean video text is never accepted as Korean sentence-mining material.",
   tags: ["sentence-mine", "youtube", "network"],
   timeoutMs: 90_000,
   async test(test) {
     await test.send(
-      `Call gemini_youtube_captions on exactly this URL: ${englishVideoUrl}. Do not invent a Korean spoken example if the tool reports that Korean caption text is unavailable.`,
+      `Call youtube_video_excerpt on exactly this URL: ${englishVideoUrl}. Do not invent a Korean spoken example if the tool reports that visible Korean captions are unavailable.`,
     );
 
     test.succeeded();
-    test.calledTool("gemini_youtube_captions", {
+    test.calledTool("youtube_video_excerpt", {
       input: { videoUrl: englishVideoUrl },
       output: rejectsUnverifiedEnglish,
       count: 1,

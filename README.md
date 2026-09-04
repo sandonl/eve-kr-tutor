@@ -92,12 +92,12 @@ agent/
 ├── connections/supermemory.ts  hosted Supermemory MCP connection
 ├── skills/guided-lesson/       lesson procedure loaded on demand
 ├── skills/sentence-mine/       source-linked Korean sentence mining
-└── tools/                       dangerous defaults disabled; web and YouTube caption tools enabled for sentence mining
+└── tools/                       dangerous defaults disabled; web and YouTube excerpt tools enabled for sentence mining
 evals/                            behavioural checks
 docs/eve-deep-dive.md            notes on Eve's architecture
 ```
 
-`gemini_youtube_captions` sends a public YouTube video to Gemini Flash through AI Gateway and returns a few basic Korean caption or transcript lines with approximate timestamps, or an explicit unavailable result. Treat those lines as Gemini video transcripts rather than verified original-caption quotes. A Naver article remains a clearly labeled written alternative.
+`youtube_video_excerpt` sends a public YouTube video to Gemini Flash through AI Gateway and returns a few short Korean on-screen caption lines with approximate timestamps, or an explicit unavailable result. Treat those lines as Gemini video excerpts rather than verified original-caption quotes or audio transcription. The sentence-mining skill discovers videos from the learner's preferred sources and moves to another source when an excerpt is unavailable or looks like metadata. A Naver article remains a clearly labeled written alternative.
 
 ## Commands
 
@@ -105,7 +105,7 @@ docs/eve-deep-dive.md            notes on Eve's architecture
 bun run dev      # Start the interactive tutor
 bun run info     # Show the capabilities Eve discovered
 bun run check    # Type-check and validate discovery
-bun test         # Run deterministic YouTube extractor contract tests
+bun test         # Run deterministic YouTube video-excerpt contract tests
 bun run eval     # Run behavioural evals; consumes subscription usage
 bun run eval -- --tag youtube --url http://127.0.0.1:2000/
 bun run build    # Build the agent
@@ -113,4 +113,4 @@ bun run build    # Build the agent
 
 The YouTube evals are tagged `network` because they call YouTube and the model. Run them against a running `bun run dev` server, or let `eve eval` start one when no server is already running. Use `--exclude-tag network` for a local deterministic-only eval run.
 
-`agent/agent.ts` and the YouTube caption tool both use `google/gemini-3.5-flash` through Vercel AI Gateway. The caption tool is a small structured-output call so sentence mining can verify Korean lines and fall back cleanly when video input is unavailable.
+`agent/agent.ts` and the YouTube video-excerpt tool both use `google/gemini-3.5-flash-lite` through Vercel AI Gateway. The excerpt tool is a small structured-output call so sentence mining can reject non-Korean or unavailable video results and fall back cleanly.

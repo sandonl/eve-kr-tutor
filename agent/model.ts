@@ -1,1 +1,1 @@
-export const tutorModel = "google/gemini-3.5-flash";
+export const tutorModel = "google/gemini-3.5-flash-lite";

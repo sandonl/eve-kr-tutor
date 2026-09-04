@@ -1,21 +1,21 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  createGeminiYoutubeCaptionsExecutor,
-  type GeminiYoutubeCaptionsInput,
-} from "../agent/lib/gemini_youtube_captions.js";
+  createYoutubeVideoExcerptExecutor,
+  type YoutubeVideoExcerptInput,
+} from "../agent/lib/youtube_video_excerpt.js";
 
 const videoUrl = "https://youtu.be/HcSDDe0TD2U?t=10";
-const input: GeminiYoutubeCaptionsInput = {
+const input: YoutubeVideoExcerptInput = {
   videoUrl,
 };
 const signal = new AbortController().signal;
 
 test("does not send non-YouTube URLs to Gemini", async () => {
   let callCount = 0;
-  const execute = createGeminiYoutubeCaptionsExecutor(async () => {
+  const execute = createYoutubeVideoExcerptExecutor(async () => {
     callCount += 1;
-    return { captions: [] };
+    return { lines: [] };
   });
 
   const result = await execute(
@@ -32,15 +32,15 @@ test("does not send non-YouTube URLs to Gemini", async () => {
   assert.equal(callCount, 0);
 });
 
-test("forwards the video request and returns trimmed, bounded captions", async () => {
+test("forwards the video request and returns a trimmed, bounded excerpt", async () => {
   let receivedUrl: string | undefined;
   let receivedSignal: AbortSignal | undefined;
-  const execute = createGeminiYoutubeCaptionsExecutor(
+  const execute = createYoutubeVideoExcerptExecutor(
     async (requestedUrl, requestedSignal) => {
       receivedUrl = requestedUrl;
       receivedSignal = requestedSignal;
       return {
-        captions: [
+        lines: [
           { timestamp: " 00:06 ", text: " 여보, 지금 어디야? " },
           { timestamp: "00:10", text: " 나 집이야. 왜? " },
           { timestamp: "00:20", text: "이 줄도 반환됩니다." },
@@ -55,9 +55,9 @@ test("forwards the video request and returns trimmed, bounded captions", async (
   assert.deepEqual(result, {
     status: "ok",
     videoUrl,
-    source: "gemini-video-transcript",
+    source: "gemini-video-excerpt",
     timestampAccuracy: "approximate",
-    captions: [
+    lines: [
       { timestamp: "00:06", text: "여보, 지금 어디야?" },
       { timestamp: "00:10", text: "나 집이야. 왜?" },
       { timestamp: "00:20", text: "이 줄도 반환됩니다." },
@@ -67,20 +67,20 @@ test("forwards the video request and returns trimmed, bounded captions", async (
   assert.equal(receivedSignal, signal);
 });
 
-test("reports when Gemini returns no usable caption text", async () => {
-  const execute = createGeminiYoutubeCaptionsExecutor(async () => ({
-    captions: [],
+test("reports when Gemini returns no visible caption text", async () => {
+  const execute = createYoutubeVideoExcerptExecutor(async () => ({
+    lines: [],
   }));
 
   const result = await execute(input, signal);
 
   assert.equal(result.status, "unavailable");
-  assert.equal(result.reason, "no_caption_text");
+  assert.equal(result.reason, "no_visible_captions");
 });
 
-test("does not present non-Korean lines as Korean captions", async () => {
-  const execute = createGeminiYoutubeCaptionsExecutor(async () => ({
-    captions: [{ timestamp: "00:06", text: "Where are you going?" }],
+test("does not present non-Korean lines as a Korean excerpt", async () => {
+  const execute = createYoutubeVideoExcerptExecutor(async () => ({
+    lines: [{ timestamp: "00:06", text: "Where are you going?" }],
   }));
 
   const result = await execute(input, signal);
@@ -90,6 +90,6 @@ test("does not present non-Korean lines as Korean captions", async () => {
     videoUrl,
     reason: "language_unverified",
     detail:
-      "Gemini returned caption text, but it was not sufficiently Korean to verify for this tutor.",
+      "Gemini returned on-screen text, but it was not sufficiently Korean to verify for this tutor.",
   });
 });

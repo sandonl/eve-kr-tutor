@@ -5,7 +5,7 @@ import { tutorModel } from "../model.js";
 const VIDEO_ID_PATTERN = /^[A-Za-z0-9_-]{11}$/;
 const HANGUL_PATTERN = /[\uac00-\ud7a3]/u;
 const LETTER_PATTERN = /\p{L}/u;
-const MAX_CAPTIONS = 3;
+const MAX_LINES = 3;
 
 function getYoutubeVideoId(videoUrl: string): string | null {
   let parsedUrl: URL;
@@ -35,11 +35,11 @@ function getYoutubeVideoId(videoUrl: string): string | null {
   return videoId && VIDEO_ID_PATTERN.test(videoId) ? videoId : null;
 }
 
-export const geminiYoutubeCaptionsInputSchema = z.object({
+export const youtubeVideoExcerptInputSchema = z.object({
   videoUrl: z.string().url().describe("A public YouTube video URL."),
 });
 
-const captionSchema = z.object({
+const lineSchema = z.object({
   timestamp: z
     .string()
     .min(1)
@@ -49,29 +49,29 @@ const captionSchema = z.object({
     .string()
     .min(1)
     .max(300)
-    .describe("A short Korean caption or transcript line."),
+    .describe("A short Korean line visible as an on-screen caption."),
 });
 
-const geminiResponseSchema = z.object({
-  captions: z.array(captionSchema).max(MAX_CAPTIONS),
+const excerptSchema = z.object({
+  lines: z.array(lineSchema).max(MAX_LINES),
 });
 
-export const geminiYoutubeCaptionsOutputSchema = z.discriminatedUnion(
+export const youtubeVideoExcerptOutputSchema = z.discriminatedUnion(
   "status",
   [
     z.object({
       status: z.literal("ok"),
       videoUrl: z.string().url(),
-      source: z.literal("gemini-video-transcript"),
+      source: z.literal("gemini-video-excerpt"),
       timestampAccuracy: z.literal("approximate"),
-      captions: z.array(captionSchema).min(1).max(5),
+      lines: z.array(lineSchema).min(1).max(MAX_LINES),
     }),
     z.object({
       status: z.literal("unavailable"),
       videoUrl: z.string().url(),
       reason: z.enum([
         "invalid_url",
-        "no_caption_text",
+        "no_visible_captions",
         "language_unverified",
         "blocked",
         "timeout",
@@ -82,25 +82,25 @@ export const geminiYoutubeCaptionsOutputSchema = z.discriminatedUnion(
   ],
 );
 
-export type GeminiYoutubeCaptionsInput = z.infer<
-  typeof geminiYoutubeCaptionsInputSchema
+export type YoutubeVideoExcerptInput = z.infer<
+  typeof youtubeVideoExcerptInputSchema
 >;
-export type GeminiYoutubeCaptionsResult = z.infer<
-  typeof geminiYoutubeCaptionsOutputSchema
+export type YoutubeVideoExcerptResult = z.infer<
+  typeof youtubeVideoExcerptOutputSchema
 >;
-type GeminiResponse = z.infer<typeof geminiResponseSchema>;
+type YoutubeExcerpt = z.infer<typeof excerptSchema>;
 
-export type GeminiCaptionGenerator = (
+export type YoutubeExcerptGenerator = (
   videoUrl: string,
   abortSignal: AbortSignal,
-) => Promise<GeminiResponse>;
+) => Promise<YoutubeExcerpt>;
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function hasKoreanCaptions(captions: readonly { text: string }[]): boolean {
-  const text = captions.map((caption) => caption.text).join(" ");
+function hasKoreanLines(lines: readonly { text: string }[]): boolean {
+  const text = lines.map((line) => line.text).join(" ");
   const characters = [...text];
   const hangulCharacters = characters.filter((character) =>
     HANGUL_PATTERN.test(character),
@@ -117,7 +117,7 @@ function hasKoreanCaptions(captions: readonly { text: string }[]): boolean {
 
 function classifyError(
   error: unknown,
-): Extract<GeminiYoutubeCaptionsResult, { status: "unavailable" }>["reason"] {
+): Extract<YoutubeVideoExcerptResult, { status: "unavailable" }>["reason"] {
   const message = getErrorMessage(error).toLowerCase();
 
   if (
@@ -142,10 +142,10 @@ function classifyError(
   return "upstream_error";
 }
 
-async function generateGeminiCaptions(
+async function generateYoutubeVideoExcerpt(
   videoUrl: string,
   abortSignal: AbortSignal,
-): Promise<GeminiResponse> {
+): Promise<YoutubeExcerpt> {
   const result = await generateText({
     model: tutorModel,
     messages: [
@@ -160,19 +160,20 @@ async function generateGeminiCaptions(
           {
             type: "text",
             text: [
-              `Return up to ${MAX_CAPTIONS} short, consecutive Korean caption lines from one nearby moment in this public YouTube video.`,
+              `Return up to ${MAX_LINES} short, consecutive Korean lines that are visibly displayed as on-screen captions or subtitles in one nearby moment of this public YouTube video.`,
               "Prefer a compact exchange or a sentence with adjacent context. Preserve the source order and do not combine distant moments.",
-              "Prefer the available caption or transcript text. Do not invent, translate, paraphrase, or explain the lines.",
-              "If no Korean caption or transcript text is available, return an empty captions array.",
+              "Read the visible caption text only. Return each line in full with its original punctuation; do not add ellipses, truncate, transcribe speech from audio, invent, translate, paraphrase, or explain the lines.",
+              "If a caption is only partly visible or clearly incomplete, omit it rather than guessing the missing text.",
+              "If you cannot confidently identify visible Korean caption or subtitle text, return an empty lines array.",
             ].join("\n"),
           },
         ],
       },
     ],
     output: Output.object({
-      schema: geminiResponseSchema,
-      name: "youtube_captions",
-      description: "Short Korean caption lines with approximate timestamps.",
+      schema: excerptSchema,
+      name: "youtube_video_excerpt",
+      description: "Short Korean on-screen caption lines with approximate timestamps.",
     }),
     maxRetries: 1,
     timeout: 90_000,
@@ -180,18 +181,18 @@ async function generateGeminiCaptions(
   });
 
   if (result.output === undefined) {
-    throw new Error("Gemini returned no structured caption output.");
+    throw new Error("Gemini returned no structured video excerpt.");
   }
 
   return result.output;
 }
 
-export function createGeminiYoutubeCaptionsExecutor(
-  generateCaptions: GeminiCaptionGenerator = generateGeminiCaptions,
+export function createYoutubeVideoExcerptExecutor(
+  generateExcerpt: YoutubeExcerptGenerator = generateYoutubeVideoExcerpt,
 ): (
-  input: GeminiYoutubeCaptionsInput,
+  input: YoutubeVideoExcerptInput,
   abortSignal: AbortSignal,
-) => Promise<GeminiYoutubeCaptionsResult> {
+) => Promise<YoutubeVideoExcerptResult> {
   return async (input, abortSignal) => {
     if (!getYoutubeVideoId(input.videoUrl)) {
       return {
@@ -203,43 +204,43 @@ export function createGeminiYoutubeCaptionsExecutor(
     }
 
     try {
-      const response = await generateCaptions(
+      const response = await generateExcerpt(
         input.videoUrl,
         abortSignal,
       );
-      const captions = response.captions
-        .map((caption) => ({
-          timestamp: caption.timestamp.trim(),
-          text: caption.text.trim(),
+      const lines = response.lines
+        .map((line) => ({
+          timestamp: line.timestamp.trim(),
+          text: line.text.trim(),
         }))
-        .filter((caption) => caption.timestamp.length > 0 && caption.text.length > 0)
-        .slice(0, MAX_CAPTIONS);
+        .filter((line) => line.timestamp.length > 0 && line.text.length > 0)
+        .slice(0, MAX_LINES);
 
-      if (captions.length === 0) {
+      if (lines.length === 0) {
         return {
           status: "unavailable",
           videoUrl: input.videoUrl,
-          reason: "no_caption_text",
-          detail: "Gemini could not access usable Korean caption or transcript text.",
+          reason: "no_visible_captions",
+          detail: "Gemini could not access usable Korean on-screen caption or subtitle text.",
         };
       }
 
-      if (!hasKoreanCaptions(captions)) {
+      if (!hasKoreanLines(lines)) {
         return {
           status: "unavailable",
           videoUrl: input.videoUrl,
           reason: "language_unverified",
           detail:
-            "Gemini returned caption text, but it was not sufficiently Korean to verify for this tutor.",
+            "Gemini returned on-screen text, but it was not sufficiently Korean to verify for this tutor.",
         };
       }
 
       return {
         status: "ok",
         videoUrl: input.videoUrl,
-        source: "gemini-video-transcript",
+        source: "gemini-video-excerpt",
         timestampAccuracy: "approximate",
-        captions,
+        lines,
       };
     } catch (error) {
       return {
