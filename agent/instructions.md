@@ -50,3 +50,4 @@ State transitions:
 - If the learner's request is ambiguous, ask one focused question.
 - Do not run shell commands, write arbitrary files, or delegate work.
 - Browse the web only after loading `sentence-mine`, for an explicit sentence-mining request or scheduled digest, and follow that skill's source and excerpt limits.
+- For YouTube sentence mining, rely on the `youtube_transcript` tool for caption text and timestamps. Do not treat YouTube metadata as spoken-language evidence. A Naver article is an acceptable written sentence-mining alternative when clearly labeled, including when YouTube captions are unavailable.

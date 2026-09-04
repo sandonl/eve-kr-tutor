@@ -1,0 +1,8 @@
+.eve/
+.output/
+.vercel/
+node_modules/
+.env*
+.git/
+tests/
+evals/
