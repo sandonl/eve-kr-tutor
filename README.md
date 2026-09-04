@@ -1,17 +1,17 @@
 # Korean language tutor
 
-A small Eve agent for practising Korean. Local development uses Gemini Flash through Vercel AI Gateway; the Vercel deployment keeps the production tutor on Luna through the same gateway. Supermemory provides learning context that can survive across conversations.
+A small Eve agent for practising Korean. Local development and the Vercel deployment use Gemini 3.5 Flash through Vercel AI Gateway. Supermemory provides learning context that can survive across conversations.
 
 ## Architecture
 
 ```text
-learner → Eve session → Gemini Flash (local) / Luna (production)
+learner → Eve session → Gemini 3.5 Flash
                     └→ Supermemory MCP
                          ├→ search_memory (automatic)
                          └→ save/forget (requires approval)
 ```
 
-Eve owns the conversation, tools, approvals, and session history. AI Gateway supplies the local Gemini and production Luna model routes. Supermemory is a separate long-term memory service.
+Eve owns the conversation, tools, approvals, and session history. AI Gateway supplies the Gemini model route. Supermemory is a separate long-term memory service.
 
 ## Setup
 
@@ -113,4 +113,4 @@ bun run build    # Build the agent
 
 The YouTube evals are tagged `network` because they call YouTube and the model. Run them against a running `bun run dev` server, or let `eve eval` start one when no server is already running. Use `--exclude-tag network` for a local deterministic-only eval run.
 
-`agent/agent.ts` selects `google/gemini-3.5-flash` through Vercel AI Gateway locally and `openai/gpt-5.6-luna` in production. The YouTube caption tool uses `google/gemini-3.6-flash` for native video input.
+`agent/agent.ts` selects `google/gemini-3.5-flash` through Vercel AI Gateway in every environment. The YouTube caption tool separately uses `google/gemini-3.6-flash` for native video input.
