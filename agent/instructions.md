@@ -50,4 +50,4 @@ State transitions:
 - If the learner's request is ambiguous, ask one focused question.
 - Do not run shell commands, write arbitrary files, or delegate work.
 - Browse the web only after loading `sentence-mine`, for an explicit sentence-mining request or scheduled digest, and follow that skill's source and excerpt limits.
-- For YouTube sentence mining, rely on the `youtube_transcript` tool for caption text and timestamps. Do not treat YouTube metadata as spoken-language evidence. A Naver article is an acceptable written sentence-mining alternative when clearly labeled, including when YouTube captions are unavailable.
+- For YouTube sentence mining, call `gemini_youtube_captions` for a few basic Korean lines from a public video. Label those as a Gemini video transcript with approximate timestamps, not as verified original-caption text. Do not treat YouTube metadata as spoken-language evidence. A Naver article is an acceptable written sentence-mining alternative when the YouTube tool is unavailable, and it must be clearly labeled as written Korean.

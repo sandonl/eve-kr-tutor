@@ -27,11 +27,11 @@ export default defineEval({
   timeoutMs: 90_000,
   async test(test) {
     await test.send(
-      `Call youtube_transcript on exactly this URL: ${englishVideoUrl}. Do not invent a Korean spoken example if the tool reports that Korean captions are unavailable.`,
+      `Call gemini_youtube_captions on exactly this URL: ${englishVideoUrl}. Do not invent a Korean spoken example if the tool reports that Korean caption text is unavailable.`,
     );
 
     test.succeeded();
-    test.calledTool("youtube_transcript", {
+    test.calledTool("gemini_youtube_captions", {
       input: { videoUrl: englishVideoUrl },
       output: rejectsUnverifiedEnglish,
       count: 1,

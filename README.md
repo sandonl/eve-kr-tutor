@@ -1,17 +1,17 @@
 # Korean language tutor
 
-A small Eve agent for practising Korean. Local development uses the Codex login; the Vercel deployment routes the same model through AI Gateway. Supermemory provides learning context that can survive across conversations.
+A small Eve agent for practising Korean. Local development uses Gemini Flash through Vercel AI Gateway; the Vercel deployment keeps the production tutor on Luna through the same gateway. Supermemory provides learning context that can survive across conversations.
 
 ## Architecture
 
 ```text
-learner → Eve session → gpt-5.6-luna
+learner → Eve session → Gemini Flash (local) / Luna (production)
                     └→ Supermemory MCP
                          ├→ search_memory (automatic)
                          └→ save/forget (requires approval)
 ```
 
-Eve owns the conversation, tools, approvals, and session history. Codex supplies local model authentication, while production uses Vercel AI Gateway. Supermemory is a separate long-term memory service.
+Eve owns the conversation, tools, approvals, and session history. AI Gateway supplies the local Gemini and production Luna model routes. Supermemory is a separate long-term memory service.
 
 ## Setup
 
@@ -23,11 +23,10 @@ nvm use
 bun install
 ```
 
-Local development uses the ChatGPT account connected to Codex:
+Local development uses Gemini Flash through AI Gateway. Add an AI Gateway key to `.env.local` (the key is already listed in `.env.example`):
 
 ```sh
-codex login
-codex login status
+AI_GATEWAY_API_KEY=your-vercel-ai-gateway-key
 ```
 
 Create a Supermemory API key, then copy the example environment file:
@@ -98,7 +97,7 @@ evals/                            behavioural checks
 docs/eve-deep-dive.md            notes on Eve's architecture
 ```
 
-`youtube_transcript` runs server-side and returns timestamped Korean caption segments, or an explicit unavailable result. It does not transcribe audio, and YouTube may challenge hosted server egress. When that happens, sentence mining can still use a separate Naver article as a clearly labeled written alternative; it never presents that article as spoken dialogue.
+`gemini_youtube_captions` sends a public YouTube video to Gemini Flash through AI Gateway and returns a few basic Korean caption or transcript lines with approximate timestamps, or an explicit unavailable result. Treat those lines as Gemini video transcripts rather than verified original-caption quotes. A Naver article remains a clearly labeled written alternative.
 
 ## Commands
 
@@ -114,4 +113,4 @@ bun run build    # Build the agent
 
 The YouTube evals are tagged `network` because they call YouTube and the model. Run them against a running `bun run dev` server, or let `eve eval` start one when no server is already running. Use `--exclude-tag network` for a local deterministic-only eval run.
 
-`agent/agent.ts` keeps the local `chatgpt()` login for development and selects `openai/gpt-5.6-luna` through Vercel AI Gateway when `NODE_ENV=production`.
+`agent/agent.ts` selects `google/gemini-3.5-flash` through Vercel AI Gateway locally and `openai/gpt-5.6-luna` in production. The YouTube caption tool uses `google/gemini-3.6-flash` for native video input.

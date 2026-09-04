@@ -9,10 +9,10 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 ## Source mode
 
-- Prefer spoken Korean from YouTube when `youtube_transcript` returns `status: "ok"` with non-empty timestamped segments.
-- Treat the result as caption evidence, not an audio transcription or proof that captions were manually written. Do not claim a caption is manual, auto-generated, or verbatim speech unless the source states that explicitly.
+- Prefer basic Korean caption or transcript lines from YouTube via `gemini_youtube_captions`.
+- Treat the result as a Gemini video transcript with approximate timestamps, not verified original-caption text or an audio transcription. Do not claim a caption is manual, auto-generated, or verbatim speech unless the source states that explicitly.
 - Do not use a title, thumbnail, description, search snippet, or an inaccessible caption track as evidence of what was spoken.
-- If `youtube_transcript` returns `status: "unavailable"`, report that the video could not provide a verifiable spoken example. Keep the video as a candidate if useful, and offer a Naver article as a separate written alternative when one is suitable.
+- If `gemini_youtube_captions` returns `status: "unavailable"`, report that the video could not provide a usable basic Korean example and offer a Naver article as a separate written alternative when one is suitable.
 - Naver and other written media are valid sentence-mining sources. Label every example as written Korean, not spoken dialogue, and never imply that an article sentence came from the video's speech.
 
 ## Preferred sources
@@ -34,7 +34,7 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 1. Do not recall stored Learning material. Use the Supermemory lookup above for source preferences, and use only narrow state metadata checks after finding a fresh candidate.
 2. Search in Korean with `web_search`, restricting results to YouTube or a specific Naver media domain such as `news.naver.com`, `entertain.naver.com`, or `tv.naver.com`. Prefer a channel or publication the learner already follows; otherwise choose a current, ordinary-life topic.
-3. For a YouTube result, call `youtube_transcript` with the video URL. Use only a successful result's timestamped segments; include the returned video URL and the segment start time when citing a mine.
+3. For a YouTube result, call `gemini_youtube_captions` with the video URL; use its short lines only with the Gemini-derived label and approximate timestamp caveat. Never claim that its text is an exact caption-track quote.
 4. For a Naver or other written-media result, use `web_fetch` only on a relevant, accessible article body. Do not download video or audio, bypass a login, paywall, robots rule, or region restriction, or scrape comments.
 5. Prefer an accessible article body over a headline. Headlines and search snippets are discovery clues, not sentence examples.
 
