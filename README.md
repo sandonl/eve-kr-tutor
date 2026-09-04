@@ -113,4 +113,4 @@ bun run build    # Build the agent
 
 The YouTube evals are tagged `network` because they call YouTube and the model. Run them against a running `bun run dev` server, or let `eve eval` start one when no server is already running. Use `--exclude-tag network` for a local deterministic-only eval run.
 
-`agent/agent.ts` selects `google/gemini-3.5-flash` through Vercel AI Gateway in every environment. The YouTube caption tool separately uses `google/gemini-3.6-flash` for native video input.
+`agent/agent.ts` and the YouTube caption tool both use `google/gemini-3.5-flash` through Vercel AI Gateway. The caption tool is a small structured-output call so sentence mining can verify Korean lines and fall back cleanly when video input is unavailable.

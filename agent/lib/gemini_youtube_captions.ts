@@ -1,9 +1,11 @@
 import { generateText, Output } from "ai";
 import { z } from "zod";
+import { tutorModel } from "../model.js";
 
 const VIDEO_ID_PATTERN = /^[A-Za-z0-9_-]{11}$/;
 const HANGUL_PATTERN = /[\uac00-\ud7a3]/u;
 const LETTER_PATTERN = /\p{L}/u;
+const MAX_CAPTIONS = 3;
 
 function getYoutubeVideoId(videoUrl: string): string | null {
   let parsedUrl: URL;
@@ -35,13 +37,6 @@ function getYoutubeVideoId(videoUrl: string): string | null {
 
 export const geminiYoutubeCaptionsInputSchema = z.object({
   videoUrl: z.string().url().describe("A public YouTube video URL."),
-  maxCaptions: z
-    .number()
-    .int()
-    .min(1)
-    .max(5)
-    .default(3)
-    .describe("Maximum number of short caption lines to return."),
 });
 
 const captionSchema = z.object({
@@ -58,7 +53,7 @@ const captionSchema = z.object({
 });
 
 const geminiResponseSchema = z.object({
-  captions: z.array(captionSchema).max(5),
+  captions: z.array(captionSchema).max(MAX_CAPTIONS),
 });
 
 export const geminiYoutubeCaptionsOutputSchema = z.discriminatedUnion(
@@ -97,7 +92,6 @@ type GeminiResponse = z.infer<typeof geminiResponseSchema>;
 
 export type GeminiCaptionGenerator = (
   videoUrl: string,
-  maxCaptions: number,
   abortSignal: AbortSignal,
 ) => Promise<GeminiResponse>;
 
@@ -150,11 +144,10 @@ function classifyError(
 
 async function generateGeminiCaptions(
   videoUrl: string,
-  maxCaptions: number,
   abortSignal: AbortSignal,
 ): Promise<GeminiResponse> {
   const result = await generateText({
-    model: "google/gemini-3.6-flash",
+    model: tutorModel,
     messages: [
       {
         role: "user",
@@ -167,10 +160,10 @@ async function generateGeminiCaptions(
           {
             type: "text",
             text: [
-              "Return up to the requested number of short Korean caption lines from this public YouTube video.",
+              `Return up to ${MAX_CAPTIONS} short, consecutive Korean caption lines from one nearby moment in this public YouTube video.`,
+              "Prefer a compact exchange or a sentence with adjacent context. Preserve the source order and do not combine distant moments.",
               "Prefer the available caption or transcript text. Do not invent, translate, paraphrase, or explain the lines.",
               "If no Korean caption or transcript text is available, return an empty captions array.",
-              `Requested maximum: ${maxCaptions}.`,
             ].join("\n"),
           },
         ],
@@ -212,7 +205,6 @@ export function createGeminiYoutubeCaptionsExecutor(
     try {
       const response = await generateCaptions(
         input.videoUrl,
-        input.maxCaptions,
         abortSignal,
       );
       const captions = response.captions
@@ -221,7 +213,7 @@ export function createGeminiYoutubeCaptionsExecutor(
           text: caption.text.trim(),
         }))
         .filter((caption) => caption.timestamp.length > 0 && caption.text.length > 0)
-        .slice(0, input.maxCaptions);
+        .slice(0, MAX_CAPTIONS);
 
       if (captions.length === 0) {
         return {

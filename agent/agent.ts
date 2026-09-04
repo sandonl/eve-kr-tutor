@@ -1,7 +1,8 @@
 import { defineAgent } from "eve";
+import { tutorModel } from "./model.js";
 
 export default defineAgent({
-  model: "google/gemini-3.5-flash",
+  model: tutorModel,
   reasoning: "medium",
   limits: {
     maxOutputTokensPerSession: 20_000,

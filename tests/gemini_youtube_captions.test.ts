@@ -8,7 +8,6 @@ import {
 const videoUrl = "https://youtu.be/HcSDDe0TD2U?t=10";
 const input: GeminiYoutubeCaptionsInput = {
   videoUrl,
-  maxCaptions: 2,
 };
 const signal = new AbortController().signal;
 
@@ -35,18 +34,17 @@ test("does not send non-YouTube URLs to Gemini", async () => {
 
 test("forwards the video request and returns trimmed, bounded captions", async () => {
   let receivedUrl: string | undefined;
-  let receivedMaximum: number | undefined;
   let receivedSignal: AbortSignal | undefined;
   const execute = createGeminiYoutubeCaptionsExecutor(
-    async (requestedUrl, maximum, requestedSignal) => {
+    async (requestedUrl, requestedSignal) => {
       receivedUrl = requestedUrl;
-      receivedMaximum = maximum;
       receivedSignal = requestedSignal;
       return {
         captions: [
           { timestamp: " 00:06 ", text: " 여보, 지금 어디야? " },
           { timestamp: "00:10", text: " 나 집이야. 왜? " },
-          { timestamp: "00:20", text: "이 줄은 잘립니다." },
+          { timestamp: "00:20", text: "이 줄도 반환됩니다." },
+          { timestamp: "00:30", text: "이 줄은 잘립니다." },
         ],
       };
     },
@@ -62,10 +60,10 @@ test("forwards the video request and returns trimmed, bounded captions", async (
     captions: [
       { timestamp: "00:06", text: "여보, 지금 어디야?" },
       { timestamp: "00:10", text: "나 집이야. 왜?" },
+      { timestamp: "00:20", text: "이 줄도 반환됩니다." },
     ],
   });
   assert.equal(receivedUrl, videoUrl);
-  assert.equal(receivedMaximum, 2);
   assert.equal(receivedSignal, signal);
 });
 

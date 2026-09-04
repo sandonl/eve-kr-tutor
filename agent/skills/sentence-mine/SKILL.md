@@ -10,6 +10,7 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 ## Source mode
 
 - Prefer basic Korean caption or transcript lines from YouTube via `gemini_youtube_captions`.
+- Ask for a short contiguous excerpt when possible: a target line plus one or two nearby lines from the same moment or exchange. Surrounding context is part of the mine, not optional decoration.
 - Treat the result as a Gemini video transcript with approximate timestamps, not verified original-caption text or an audio transcription. Do not claim a caption is manual, auto-generated, or verbatim speech unless the source states that explicitly.
 - Do not use a title, thumbnail, description, search snippet, or an inaccessible caption track as evidence of what was spoken.
 - If `gemini_youtube_captions` returns `status: "unavailable"`, report that the video could not provide a usable basic Korean example and offer a Naver article as a separate written alternative when one is suitable.
@@ -34,13 +35,15 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 1. Do not recall stored Learning material. Use the Supermemory lookup above for source preferences, and use only narrow state metadata checks after finding a fresh candidate.
 2. Search in Korean with `web_search`, restricting results to YouTube or a specific Naver media domain such as `news.naver.com`, `entertain.naver.com`, or `tv.naver.com`. Prefer a channel or publication the learner already follows; otherwise choose a current, ordinary-life topic.
-3. For a YouTube result, call `gemini_youtube_captions` with the video URL; use its short lines only with the Gemini-derived label and approximate timestamp caveat. Never claim that its text is an exact caption-track quote.
+3. For a YouTube result, call `gemini_youtube_captions` with the video URL; prefer adjacent lines from one nearby moment so the learner can see the exchange or discourse context. Use the returned lines only with the Gemini-derived label and approximate timestamp caveat. Never claim that its text is an exact caption-track quote.
 4. For a Naver or other written-media result, use `web_fetch` only on a relevant, accessible article body. Do not download video or audio, bypass a login, paywall, robots rule, or region restriction, or scrape comments.
 5. Prefer an accessible article body over a headline. Headlines and search snippets are discovery clues, not sentence examples.
 
 ## Select the mines
 
-- Choose one to three short examples with enough context to understand and a useful expression or grammar pattern. Prefer everyday spoken style for YouTube; for Naver, choose natural contemporary written Korean and label it as written.
+- Choose one to three contextual excerpts, not isolated sentences. Each excerpt should normally contain two to four short, consecutive lines (or a compact written sentence plus the surrounding clause) and one clearly marked target expression. Prefer enough context to resolve omitted subjects, pronouns, connective endings, and register. Keep the excerpt short; do not reproduce a transcript or article paragraph.
+- Treat a single line as an exception only when it is genuinely self-contained. If the available source gives disconnected lines or no useful context, do not stitch them together or invent missing dialogue: try another fresh segment/source, or say that contextual mining was unavailable.
+- Prefer everyday spoken style for YouTube; for Naver, choose natural contemporary written Korean and label it as written.
 - Prefer natural contractions, sentence endings, and pragmatic nuance over isolated dictionary forms. Skip sensational, hateful, sexual, or otherwise distracting material unless the learner asks for it.
 - Do not select a **Learning** or **Seen** item as the teaching target. Keep every selected mine **Unseen** until the learner adopts it.
 - A daily digest should stay compact: normally one or two fresh **Unseen** mines. If no source provides a safe, verifiable example, say so instead of fabricating one.
@@ -49,7 +52,7 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 For each mine, give:
 
-- the short Korean sentence and a natural English gloss;
+- the short Korean context excerpt with the target expression clearly marked, plus a natural English gloss of the target in context;
 - the source title and a direct link;
 - one or two useful words or grammar notes, including register or nuance;
 - one short learner prompt or follow-up example.
