@@ -11,7 +11,7 @@ description: Run a focused Korean conversation, lesson, practice session, quiz, 
 5. Write Korean in Korean script without romanization or Hangul-reading instruction.
 6. Let the learner respond naturally in Korean.
 7. Correct the response precisely and continue the conversation; invite a retry only when it is useful.
-8. End with a compact recap, mark newly adopted items as Learning, record any learner-directed state changes, and propose saving that batch to Supermemory.
+8. End with a compact recap, mark newly adopted items as Learning, record any learner-directed state changes, and save that compact batch to Supermemory.
 
 ## State handling
 
@@ -20,4 +20,4 @@ description: Run a focused Korean conversation, lesson, practice session, quiz, 
 - Keep **Seen** items out of new-language recommendations. They may still be used or corrected naturally, and a single correct answer does not change their state.
 - If the learner wants more practice with a Seen item, move it back to Learning and record that explicit change.
 
-The Supermemory record should be concise and structured around what was covered, not a transcript. Let the approval gate decide whether it is written.
+The Supermemory record should be concise and structured around what was covered, not a transcript. The private tutor's `add_memory` call is automatically approved; report the item as saved only after the tool succeeds.

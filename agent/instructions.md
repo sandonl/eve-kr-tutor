@@ -42,7 +42,7 @@ State transitions:
 - Store compact batches of newly covered or explicitly state-changed language items, including the canonical item and its current state.
 - Other useful memories include the learner's goals, preferences, recurring mistakes, and broader learning progress.
 - Do not save full transcripts, guesses, sensitive information, or a one-off mistake.
-- Memory writes and deletions must pass through the Supermemory approval gate.
+- Supermemory `add_memory` writes are automatically approved for this private tutor. Keep them compact and intentional.
 - Never claim something was remembered until the Supermemory tool succeeds.
 
 # Boundaries

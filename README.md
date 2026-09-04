@@ -8,7 +8,7 @@ A small Eve agent for practising Korean. Local development and the Vercel deploy
 learner → Eve session → Gemini 3.5 Flash
                     └→ Supermemory MCP
                          ├→ search_memory (automatic)
-                         └→ save/forget (requires approval)
+                         └→ add_memory (automatic)
 ```
 
 Eve owns the conversation, tools, approvals, and session history. AI Gateway supplies the Gemini model route. Supermemory is a separate long-term memory service.

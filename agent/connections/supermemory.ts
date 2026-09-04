@@ -32,5 +32,5 @@ export default defineMcpClientConnection({
   headers: getProjectHeaders,
   tools: { allow: ["search_memory", "add_memory", "whoAmI"] },
   approval: ({ toolName }) =>
-    toolName.endsWith("__add_memory") ? "user-approval" : "not-applicable",
+    toolName.endsWith("__add_memory") ? "approved" : "not-applicable",
 });
