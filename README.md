@@ -75,11 +75,12 @@ Try:
 
 1. `카페에서 주문하는 상황으로 자연스럽게 대화해 보자.`
 2. `내 표현을 더 자연스럽게 고쳐 줘.`
-3. `/sentence-mine` to find a few source-linked, everyday Korean examples.
-4. `Remember the new words we covered today so you don't teach them as new next time.`
-5. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
+3. `/daily-lesson` to review current Learning words with example sentences.
+4. `/sentence-mine` to find a few source-linked, everyday Korean examples.
+5. `Remember the new words we covered today so you don't teach them as new next time.`
+6. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
 
-Compact Supermemory writes are automatically approved for this private tutor. Future lessons search that memory before selecting new material, including the learner's saved 2k frequency-list preference.
+Compact Supermemory writes are automatically approved for this private tutor. The current Learning pile lives in one canonical `EVE_KOREAN_LEARNING_PILE` record, which daily lessons can paginate and update as states change; sentence mining uses the learner's saved 2k frequency-list preference as a soft familiarity filter.
 
 ## Project shape
 
@@ -90,7 +91,7 @@ agent/
 ├── channels/eve.ts             local TUI and HTTP channel
 ├── channels/telegram.ts        Telegram webhook channel
 ├── connections/supermemory.ts  hosted Supermemory MCP connection
-├── skills/guided-lesson/       lesson procedure loaded on demand
+├── skills/daily-lesson/        review current Learning items with examples
 ├── skills/sentence-mine/       source-linked Korean sentence mining
 └── tools/                       dangerous defaults disabled; web and YouTube excerpt tools enabled for sentence mining
 evals/                            behavioural checks
