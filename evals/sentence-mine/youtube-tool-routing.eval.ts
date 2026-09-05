@@ -32,6 +32,16 @@ export default defineEval({
     test.succeeded();
     test.loadedSkill("sentence-mine");
     test.messageIncludes(videoUrl);
+    test.eventsSatisfy("no sentence-mining meta preamble", (events) =>
+      events.every(
+        (event) =>
+          event.type !== "message.completed" ||
+          typeof event.data.message !== "string" ||
+          !/Let's format|^Draft:|Following the constraints|I'll present/i.test(
+            event.data.message.trim(),
+          ),
+      ),
+    );
     test.calledTool("youtube_video_excerpt", {
       input: { videoUrl },
       output: isVideoExcerptResult,

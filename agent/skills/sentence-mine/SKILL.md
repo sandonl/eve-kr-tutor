@@ -60,6 +60,8 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 Every mine must include a direct source URL. This is mandatory: a source title, channel name, timestamp, or search result is not a substitute for the link.
 
+The response is the final learner-facing message. Do not expose planning or process: never mention the skill, system instructions, tools, constraints, formatting decisions, or a draft. Do not start with phrases such as `Let's format...`, `Draft:`, `Following the constraints...`, or `I'll present...`; start directly with the mine or a concise unavailable result.
+
 For each mine, give:
 
 - the complete Korean context excerpt, followed by a separate `핵심 표현:` label and a natural English gloss of that expression in context;
