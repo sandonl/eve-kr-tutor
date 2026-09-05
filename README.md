@@ -1,4 +1,4 @@
-# Korean language tutor
+# eve-kr-tutor
 
 A small Eve agent for practising Korean. Local development and the Vercel deployment use Gemini 3.5 Flash through Vercel AI Gateway. Supermemory provides learning context that can survive across conversations.
 
