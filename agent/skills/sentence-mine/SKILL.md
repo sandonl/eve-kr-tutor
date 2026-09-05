@@ -58,16 +58,20 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 ## Teach and cite
 
+Every mine must include a direct source URL. This is mandatory: a source title, channel name, timestamp, or search result is not a substitute for the link.
+
 For each mine, give:
 
 - the complete Korean context excerpt, followed by a separate `핵심 표현:` label and a natural English gloss of that expression in context;
-- the source title and a direct link;
+- the source title and the exact direct URL used for the source (the YouTube video URL passed to `youtube_video_excerpt`, or the Naver/article URL fetched with `web_fetch`);
 - one or two useful words or grammar notes, including register or nuance;
 - one short learner prompt or follow-up example.
 
+Put the URL on its own plain-text line labelled `출처 링크:` so it remains clickable in Telegram and the TUI. Before sending, verify that every numbered mine has an `https://` URL matching its source. If the exact reference URL is unavailable, discard that mine and find another source or say that mining was unavailable; never present an unlinked mine.
+
 Keep the response roughly 70% Korean and 30% English, with Korean examples always in Hangul and no romanization. English glosses explain meaning; they never contain a Korean pronunciation spelling. Use plain text that renders reliably in Telegram and the TUI: short labels and numbered items are fine, but avoid Markdown headings (`#`), blockquotes (`>`), horizontal rules (`---`), tables, nested lists, and decorative bold or italics. Do not cut a source excerpt to make it fit; return fewer mines instead. Keep quoted material short and never reproduce a full article, transcript, or video script. Make clear when the source is written Korean rather than speech.
 
-Use a compact layout such as: `오늘의 문장`, `1) 출처:`, `시간:`, `맥락:`, `핵심 표현:`, `뜻:`, `예문:`, and `연습:`. Keep the Korean excerpt on its own lines so the surrounding exchange remains readable. Identify the target expression with the label rather than changing the source wording with Markdown markers.
+Use a compact layout such as: `오늘의 문장`, `1) 출처:`, `출처 링크:`, `시간:`, `맥락:`, `핵심 표현:`, `뜻:`, `예문:`, and `연습:`. Keep the Korean excerpt on its own lines so the surrounding exchange remains readable. Identify the target expression with the label rather than changing the source wording with Markdown markers.
 
 ## Memory and state
 
