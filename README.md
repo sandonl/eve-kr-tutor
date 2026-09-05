@@ -76,7 +76,7 @@ Try:
 1. `카페에서 주문하는 상황으로 자연스럽게 대화해 보자.`
 2. `내 표현을 더 자연스럽게 고쳐 줘.`
 3. `/daily-lesson` to review current Learning words with example sentences.
-4. `/sentence-mine` to find a few source-linked, everyday Korean examples.
+4. `/sentence-mine` to find 3–5 source-linked, everyday Korean examples.
 5. `Remember the new words we covered today so you don't teach them as new next time.`
 6. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
 

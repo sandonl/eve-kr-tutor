@@ -46,7 +46,7 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 
 ## Select the mines
 
-- Choose one to three contextual excerpts, not isolated sentences. Each excerpt should normally contain two to four short, consecutive lines (or a compact written sentence plus the surrounding clause) and one clearly marked target expression. Prefer enough context to resolve omitted subjects, pronouns, connective endings, and register. Keep the excerpt short; do not reproduce a transcript or article paragraph.
+- Choose 3–5 contextual excerpts, not isolated sentences. Each excerpt should normally contain two to four short, consecutive lines (or a compact written sentence plus the surrounding clause) and one clearly marked target expression. Prefer enough context to resolve omitted subjects, pronouns, connective endings, and register. Keep each excerpt short; do not reproduce a transcript or article paragraph.
 - Identify two or three plausible target expressions from each fresh excerpt before choosing one. Check each against the remembered 2k list and language-item state, then choose the first useful target that is outside the list and **Unseen**. This prevents a familiar verb such as “to improve” or “to increase” from consuming the mine when the same source contains a better new expression.
 - If every plausible target is familiar, mine another fresh segment or video. Do not return the familiar target just because it is available, and do not ask the learner to provide another link.
 - Treat a single line as an exception only when it is genuinely self-contained. If the available source gives disconnected lines or no useful context, do not stitch them together or invent missing dialogue: try another fresh segment/source, or say that contextual mining was unavailable.
@@ -54,7 +54,7 @@ Use this skill when the learner asks to find, fetch, or mine Korean examples fro
 - Prefer everyday spoken style for YouTube; for Naver, choose natural contemporary written Korean and label it as written.
 - Prefer natural contractions, sentence endings, and pragmatic nuance over isolated dictionary forms. Skip sensational, hateful, sexual, or otherwise distracting material unless the learner asks for it.
 - Do not select a target on the remembered 2k frequency list or a **Learning**/**Seen** item as the teaching target. Keep every selected mine **Unseen** until the learner adopts it.
-- A daily digest should stay compact: normally one or two fresh **Unseen** mines. If no source provides a safe, verifiable example, say so instead of fabricating one.
+- Each run should target 3–5 fresh **Unseen** mines. Try additional preferred videos or written sources when the first source does not provide enough safe candidates. If fewer than 3 safe, verifiable mines remain after those attempts, return the safe ones and say that the source material was limited instead of fabricating any.
 
 ## Teach and cite
 
@@ -62,18 +62,37 @@ Every mine must include a direct source URL. This is mandatory: a source title, 
 
 The response is the final learner-facing message. Do not expose planning or process: never mention the skill, system instructions, tools, constraints, formatting decisions, or a draft. Do not start with phrases such as `Let's format...`, `Draft:`, `Following the constraints...`, or `I'll present...`; start directly with the mine or a concise unavailable result.
 
+Use this exact plain-text shape, replacing every bracketed value with verified source data before sending. Repeat the numbered block for 3–5 mines. Do not print the words `예시 형식` or any bracketed placeholder:
+
+```text
+오늘의 문장
+
+1) 출처: [video title]
+출처 링크: [exact YouTube or reference URL used]
+시간: [approximate timestamp, or omit for written sources]
+맥락: [one short Korean explanation of the situation]
+[complete Korean context line]
+[complete Korean context line]
+
+핵심 표현: [target expression]
+뜻: [concise English meaning in context]
+뉘앙스: [short Korean/English nuance or register note]
+예문: [one natural Korean example]
+```
+
+For a Naver or other written source, keep the same shape, label it as `유형: written Korean`, and use the exact article URL in `출처 링크:`. There is no practice-prompt field. Before sending, check that no placeholder remains and that every numbered mine has its own direct `https://` URL.
+
 For each mine, give:
 
 - the complete Korean context excerpt, followed by a separate `핵심 표현:` label and a natural English gloss of that expression in context;
 - the source title and the exact direct URL used for the source (the YouTube video URL passed to `youtube_video_excerpt`, or the Naver/article URL fetched with `web_fetch`);
 - one or two useful words or grammar notes, including register or nuance;
-- one short learner prompt or follow-up example.
 
 Put the URL on its own plain-text line labelled `출처 링크:` so it remains clickable in Telegram and the TUI. Before sending, verify that every numbered mine has an `https://` URL matching its source. If the exact reference URL is unavailable, discard that mine and find another source or say that mining was unavailable; never present an unlinked mine.
 
 Keep the response roughly 70% Korean and 30% English, with Korean examples always in Hangul and no romanization. English glosses explain meaning; they never contain a Korean pronunciation spelling. Use plain text that renders reliably in Telegram and the TUI: short labels and numbered items are fine, but avoid Markdown headings (`#`), blockquotes (`>`), horizontal rules (`---`), tables, nested lists, and decorative bold or italics. Do not cut a source excerpt to make it fit; return fewer mines instead. Keep quoted material short and never reproduce a full article, transcript, or video script. Make clear when the source is written Korean rather than speech.
 
-Use a compact layout such as: `오늘의 문장`, `1) 출처:`, `출처 링크:`, `시간:`, `맥락:`, `핵심 표현:`, `뜻:`, `예문:`, and `연습:`. Keep the Korean excerpt on its own lines so the surrounding exchange remains readable. Identify the target expression with the label rather than changing the source wording with Markdown markers.
+Use a compact layout such as: `오늘의 문장`, `1) 출처:`, `출처 링크:`, `시간:`, `맥락:`, `핵심 표현:`, `뜻:`, and `예문:`. Keep the Korean excerpt on its own lines so the surrounding exchange remains readable. Identify the target expression with the label rather than changing the source wording with Markdown markers.
 
 ## Memory and state
 
