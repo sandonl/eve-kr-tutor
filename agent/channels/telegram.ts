@@ -1,5 +1,4 @@
 import { defaultTelegramAuth, telegramChannel } from "eve/channels/telegram";
-import { withTelegramClearCommand } from "../lib/telegram_clear.js";
 
 const botUsername = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
 const allowedUserId = process.env.TELEGRAM_ALLOWED_USER_ID?.trim();
@@ -8,7 +7,7 @@ const telegramResponseInstructions = [
   "Use plain text only in Telegram. Do not use Markdown or HTML formatting markers such as **, __, backticks, or <b> tags. Use simple bullets or numbered lines for lists, and keep the response concise.",
 ];
 
-const channel = telegramChannel({
+export default telegramChannel({
   // Eve's native channel resolves the token and webhook secret from the
   // TELEGRAM_BOT_TOKEN and TELEGRAM_WEBHOOK_SECRET_TOKEN environment vars.
   botUsername,
@@ -30,5 +29,3 @@ const channel = telegramChannel({
     };
   },
 });
-
-export default withTelegramClearCommand(channel, { botUsername, allowedUserId });
