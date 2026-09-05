@@ -4,6 +4,16 @@ import { tutorModel } from "./model.js";
 export default defineAgent({
   model: tutorModel,
   reasoning: "medium",
+  modelOptions: {
+    providerOptions: {
+      google: {
+        thinkingConfig: {
+          thinkingLevel: "medium",
+          includeThoughts: false,
+        },
+      },
+    },
+  },
   limits: {
     maxOutputTokensPerSession: 20_000,
     sessionTimeoutMs: 24 * 60 * 60 * 1_000,
