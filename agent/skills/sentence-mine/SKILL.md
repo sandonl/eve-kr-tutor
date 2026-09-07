@@ -15,7 +15,7 @@ Use this skill for an explicit request to find or mine Korean examples from YouT
 
 ## 2. Retrieve usable excerpts
 
-- **YouTube:** call `youtube_video_excerpt` with the candidate URL for short, adjacent Korean on-screen dialogue-caption lines. Label the result as a Gemini video excerpt with approximate timestamps—not verified original-caption text or audio transcription. Do not claim manual/automatic captions or verbatim speech without explicit source evidence. If unavailable, dubious, or just title cards/metadata, try another preferred video before moving to written alternatives.
+- **YouTube:** call `youtube_video_excerpt` with the candidate URL for short, adjacent Korean on-screen dialogue-caption lines. Treat the result as model-read video text with approximate timestamps—not verified original-caption text or audio transcription. Do not display a Gemini/type label for video mines. Do not claim manual/automatic captions or verbatim speech without explicit source evidence. If unavailable, dubious, or just title cards/metadata, try another preferred video before moving to written alternatives.
 - **Naver/other written media:** use `web_fetch` on an accessible article body, and label the result as written Korean, not speech. For Naver discovery, restrict searches to a relevant domain such as `news.naver.com`, `entertain.naver.com`, or `tv.naver.com`.
 - Select two to four short consecutive lines, or a compact written sentence with its surrounding clause, so omitted subjects, endings, and register make sense. A single line is acceptable only if self-contained. Never stitch disconnected lines together or invent missing dialogue.
 - Preserve selected lines in full: no shortening, added ellipses, or silent paraphrases. Reject truncated lines unless adjacent lines complete the thought. Reject romanized/transliterated lines rather than converting them; Korean examples must remain readable Hangul.
@@ -39,7 +39,6 @@ The template below shows the minimum complete batch: **three numbered mines**, n
 
 1) 출처: [source title]
 출처 링크: [exact direct https:// URL used]
-유형: [Gemini video excerpt / written Korean]
 시간: [approximate timestamp; omit for written sources]
 맥락: [short Korean explanation of the situation]
 [complete Korean context line]
@@ -52,7 +51,6 @@ The template below shows the minimum complete batch: **three numbered mines**, n
 
 2) 출처: [source title]
 출처 링크: [exact direct https:// URL used]
-유형: [Gemini video excerpt / written Korean]
 시간: [approximate timestamp; omit for written sources]
 맥락: [short Korean explanation of the situation]
 [complete Korean context line from the second excerpt]
@@ -65,7 +63,6 @@ The template below shows the minimum complete batch: **three numbered mines**, n
 
 3) 출처: [source title]
 출처 링크: [exact direct https:// URL used]
-유형: [Gemini video excerpt / written Korean]
 시간: [approximate timestamp; omit for written sources]
 맥락: [short Korean explanation of the situation]
 [complete Korean context line from the third excerpt]
