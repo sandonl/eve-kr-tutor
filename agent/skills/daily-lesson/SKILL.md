@@ -1,11 +1,13 @@
 ---
 name: daily-lesson
-description: Build a compact Korean review lesson or paginated Learning-pile view from the learner's current words, expressions, and grammar.
+description: Use for /lesson, "whats todays lesson", "what are we learning today", daily reviews, or Learning-pile requests. Build a compact Korean review from current Learning words, expressions, and grammar.
 ---
 
 # Daily Korean lesson
 
 Use this skill when the learner asks for today's lesson, a daily review, practice using the current Learning pile, or a list of it.
+
+Treat `/lesson`, “what's today's lesson?”, “whats todays lesson”, and “what are we learning today?” as requests to start the lesson, not questions about available features. Recognize equivalent wording regardless of capitalization or punctuation; begin the workflow without asking the learner to choose a topic.
 
 ## Workflow
 
