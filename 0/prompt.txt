@@ -1,0 +1,9 @@
+ok whats the current state of this repo what are our skills - do we also need to include a /whoami
+
+---
+
+for sentence mine can it also be triggered by /mine
+
+---
+
+then commit and push these changes as well
