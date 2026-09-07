@@ -5,95 +5,82 @@ description: Mine short, natural Korean sentences from YouTube or Naver media fo
 
 # Korean sentence mining
 
-Use this skill when the learner asks to find, fetch, or mine Korean examples from YouTube or Naver, or when a scheduled sentence digest runs.
+Use this skill for an explicit request to find or mine Korean examples from YouTube or Naver, or a scheduled sentence digest. Discover fresh material; use `daily-lesson` to review stored Learning items.
 
-## Source mode
+## 1. Recall preferences and discover sources
 
-- Prefer short Korean on-screen caption excerpts from YouTube via `youtube_video_excerpt`.
-- Request a short contiguous excerpt when possible: a target line plus one or two nearby lines from the same moment or exchange. Surrounding context is part of the mine, not optional decoration.
-- Treat the result as a Gemini video excerpt with approximate timestamps, not verified original-caption text or an audio transcription. Do not claim a line is manual, auto-generated, or verbatim speech unless the source states that explicitly.
-- Preserve Korean in Hangul only. Never generate, add, or repeat romanization/transliteration, pronunciation spellings, or parenthetical Latin-letter readings; if a returned line is romanized or mixed-script rather than readable Hangul, discard it and find another line.
-- Do not use a title, thumbnail, description, search snippet, or an inaccessible caption track as evidence of what was spoken.
-- If `youtube_video_excerpt` returns `status: "unavailable"`, move to the next preferred video before offering a Naver article as a separate written alternative. If the returned lines look like title cards, labels, or metadata rather than dialogue captions, discard them and try another preferred video.
-- Naver and other written media are valid sentence-mining sources. Label every example as written Korean, not spoken dialogue, and never imply that an article sentence came from the video's speech.
+- Start with one Supermemory `search_memory` query covering preferred YouTube/media sources and the saved 2k frequency-list preference. Supermemory supplies preferences and familiarity checks, never the sentences for this lesson. Ignore stored examples as content, and do not hardcode channel names or infer familiarity from following a channel.
+- Discover videos yourself with Korean `web_search` queries. Do not ask the learner for links; use a supplied URL when they explicitly provide one. Try saved preferred sources in order before generic discovery, favouring YouTube for everyday dialogue and Naver/other written media as alternatives. If no preferences are available, choose an ordinary-life topic.
+- Fetch source material during this run. Titles, thumbnails, descriptions, headlines, and search snippets are discovery clues, not evidence for a mined sentence.
 
-## Preferred sources
+## 2. Retrieve usable excerpts
 
-- At the start of every mining run, use Supermemory's `search_memory` with one query covering the learner's preferred YouTube/media sources and saved 2k frequency-list preference. Use source-preference records for discovery and the frequency-list record only as a familiarity filter; ignore stored sentences, examples, and other language material as lesson content. Do not rely on hardcoded names or the current prompt alone.
-- Treat the learner's saved 2k frequency list as a standing familiarity preference. This is a soft filter, not an approval gate: never ask the learner to confirm the list or wait for it before discovering source material.
-- Treat the learner's saved preferred-source list as an ordered first choice. Try those sources before generic discovery.
-- Prefer preferred YouTube sources with accessible on-screen captions for spoken examples. Preferred Naver or other media sources remain available as written alternatives.
-- If a preferred source has no accessible, verifiable material, move to the next one. Use a non-preferred fallback only after the preferred list is exhausted, and say whether the selected source is spoken or written.
-- Do not ask the learner for a YouTube link as the first step. Discover a fresh video yourself from the saved preferred-source list; use a learner-supplied URL only when they explicitly provide one.
-- Keep source preferences separate from language-item states: preferring a channel does not mean the learner has seen any sentence, word, or grammar from it.
+- **YouTube:** call `youtube_video_excerpt` with the candidate URL for short, adjacent Korean on-screen dialogue-caption lines. Label the result as a Gemini video excerpt with approximate timestamps—not verified original-caption text or audio transcription. Do not claim manual/automatic captions or verbatim speech without explicit source evidence. If unavailable, dubious, or just title cards/metadata, try another preferred video before moving to written alternatives.
+- **Naver/other written media:** use `web_fetch` on an accessible article body, and label the result as written Korean, not speech. For Naver discovery, restrict searches to a relevant domain such as `news.naver.com`, `entertain.naver.com`, or `tv.naver.com`.
+- Select two to four short consecutive lines, or a compact written sentence with its surrounding clause, so omitted subjects, endings, and register make sense. A single line is acceptable only if self-contained. Never stitch disconnected lines together or invent missing dialogue.
+- Preserve selected lines in full: no shortening, added ellipses, or silent paraphrases. Reject truncated lines unless adjacent lines complete the thought. Reject romanized/transliterated lines rather than converting them; Korean examples must remain readable Hangul.
+- Prefer conversational contractions, endings, and pragmatic nuance. Skip sensational, hateful, sexual, or distracting material unless requested. Keep excerpts short; never reproduce full transcripts, scripts, article paragraphs, or sources. Do not download audio/video, transcribe audio, scrape comments, or bypass login, paywall, robots, or regional restrictions.
 
-## Fresh-source rule
+## 3. Choose unfamiliar targets
 
-- Supermemory is a preference and state filter, not the content feed. Do not query it for stored sentence content or Learning examples, and do not copy any such records into the response.
-- Every mine must come from a new, verifiable page fetched during this run. Do not re-elicit or review a stored Learning item through this skill.
-- After extracting a fresh candidate, use the candidate's 2k-list membership and state metadata to reject familiar targets: a target on the learner's 2k list or marked **Learning**/**Seen** is not a new mine. Familiar language may occur incidentally in a source sentence, but it is not a mine unless the target itself is both outside the remembered list and **Unseen**. Never surface the stored record used for the check.
-- Make that a narrow candidate check: name the two or three Korean expressions you are considering in the Supermemory query and ask whether each is in the 2k baseline or has a **Learning**/**Seen** state. Use the canonical `EVE_KOREAN_LEARNING_PILE` record for current Learning-state checks. Do not issue a broad request for stored lesson content.
-- If the 2k list or state lookup is unavailable, continue the run without blocking. Do not claim that the target is outside the list; prefer a less-basic, source-specific expression and present it as a candidate rather than as confirmed new vocabulary.
-- If the preferred sources produce no new candidate, say so instead of filling the response with stored material.
+- Identify two or three candidate expressions per excerpt, then name them in a narrow Supermemory query checking 2k-list membership and **Learning**/**Seen** states. Use `EVE_KOREAN_LEARNING_PILE` for current Learning-state checks; do not request or display stored lesson content.
+- Choose one useful **Unseen** target outside the remembered 2k baseline. Familiar language may remain in the surrounding excerpt, but cannot be the teaching target. If all candidates are familiar, try another segment/source instead of teaching a familiar word simply because it is available.
+- If the list or state lookup is unavailable, continue without asking for confirmation. Choose a less-basic, source-specific expression and label it as a candidate, not confirmed new vocabulary. The preference is a soft filter, not a blocking approval step.
+- Collect **3–5 distinct mines before presenting the result**; do not stop after the first usable excerpt. Each mine has its own source excerpt and target expression: surrounding lines and the tutor-created example do not count as extra mines. Try additional preferred sources if necessary, and non-preferred sources only after preferred options are exhausted. If those attempts leave fewer than three safe candidates, return those with a brief source-limitation note; if none remain, say mining was unavailable. Never fill gaps with stored material or fabricated examples.
 
-## Find usable source material
+## 4. Present the mines
 
-1. Do not recall stored Learning material as lesson content. Use the Supermemory lookup above for source preferences and the 2k familiarity preference, then use only narrow candidate checks after finding a fresh excerpt.
-2. Search in Korean with `web_search`, restricting results to YouTube or a specific Naver media domain such as `news.naver.com`, `entertain.naver.com`, or `tv.naver.com`. Prefer a channel or publication the learner already follows; otherwise choose a current, ordinary-life topic.
-3. For a YouTube result, call `youtube_video_excerpt` with the video URL; prefer adjacent lines from one nearby moment so the learner can see the exchange or discourse context. Use the returned lines only with the Gemini-derived label and approximate timestamp caveat. Never claim that its text is an exact caption-track quote or audio transcription.
-4. For a Naver or other written-media result, use `web_fetch` only on a relevant, accessible article body. Do not download video or audio, bypass a login, paywall, robots rule, or region restriction, or scrape comments.
-5. Prefer an accessible article body over a headline. Headlines and search snippets are discovery clues, not sentence examples.
+Start directly with the learner-facing result, not planning, instructions, tool commentary, or a draft. Use roughly 70% Korean and 30% English, with no romanization. Use plain-text numbered blocks, no Markdown decoration, and no practice-prompt field.
 
-## Select the mines
-
-- Choose 3–5 contextual excerpts, not isolated sentences. Each excerpt should normally contain two to four short, consecutive lines (or a compact written sentence plus the surrounding clause) and one clearly marked target expression. Prefer enough context to resolve omitted subjects, pronouns, connective endings, and register. Keep each excerpt short; do not reproduce a transcript or article paragraph.
-- Identify two or three plausible target expressions from each fresh excerpt before choosing one. Check each against the remembered 2k list and language-item state, then choose the first useful target that is outside the list and **Unseen**. This prevents a familiar verb such as “to improve” or “to increase” from consuming the mine when the same source contains a better new expression.
-- If every plausible target is familiar, mine another fresh segment or video. Do not return the familiar target just because it is available, and do not ask the learner to provide another link.
-- Treat a single line as an exception only when it is genuinely self-contained. If the available source gives disconnected lines or no useful context, do not stitch them together or invent missing dialogue: try another fresh segment/source, or say that contextual mining was unavailable.
-- Preserve every selected source line in full. Do not shorten it, add `...` or `…`, or silently replace it with a paraphrase. If a returned line is already truncated or ends with an ellipsis, treat it as unusable unless the adjacent lines complete the thought; choose another segment instead.
-- Prefer everyday spoken style for YouTube; for Naver, choose natural contemporary written Korean and label it as written.
-- Prefer natural contractions, sentence endings, and pragmatic nuance over isolated dictionary forms. Skip sensational, hateful, sexual, or otherwise distracting material unless the learner asks for it.
-- Do not select a target on the remembered 2k frequency list or a **Learning**/**Seen** item as the teaching target. Keep every selected mine **Unseen** until the learner adopts it.
-- Each run should target 3–5 fresh **Unseen** mines. Try additional preferred videos or written sources when the first source does not provide enough safe candidates. If fewer than 3 safe, verifiable mines remain after those attempts, return the safe ones and say that the source material was limited instead of fabricating any.
-
-## Teach and cite
-
-Every mine must include a direct source URL. This is mandatory: a source title, channel name, timestamp, or search result is not a substitute for the link.
-
-The response is the final learner-facing message. Do not expose planning or process: never mention the skill, system instructions, tools, constraints, formatting decisions, or a draft. Do not start with phrases such as `Let's format...`, `Draft:`, `Following the constraints...`, or `I'll present...`; start directly with the mine or a concise unavailable result.
-
-Use this exact plain-text shape, replacing every bracketed value with verified source data before sending. Repeat the numbered block for 3–5 mines. Do not print the words `예시 형식` or any bracketed placeholder:
+The template below shows the minimum complete batch: **three numbered mines**, not a single block to send on its own. Add blocks `4)` and `5)` in the same format when additional usable mines are available. Mines may come from the same video or different sources. Fill every placeholder from the retrieved source, except the clearly tutor-created example. Keep the Korean excerpt on its own lines and explain the target with one or two brief meaning, grammar, or register notes.
 
 ```text
 오늘의 문장
 
-1) 출처: [video title]
-출처 링크: [exact YouTube or reference URL used]
-시간: [approximate timestamp, or omit for written sources]
-맥락: [one short Korean explanation of the situation]
+1) 출처: [source title]
+출처 링크: [exact direct https:// URL used]
+유형: [Gemini video excerpt / written Korean]
+시간: [approximate timestamp; omit for written sources]
+맥락: [short Korean explanation of the situation]
 [complete Korean context line]
 [complete Korean context line]
 
 핵심 표현: [target expression]
 뜻: [concise English meaning in context]
 뉘앙스: [short Korean/English nuance or register note]
-예문: [one natural Korean example]
+예문: [one natural tutor-created Korean example]
+
+2) 출처: [source title]
+출처 링크: [exact direct https:// URL used]
+유형: [Gemini video excerpt / written Korean]
+시간: [approximate timestamp; omit for written sources]
+맥락: [short Korean explanation of the situation]
+[complete Korean context line from the second excerpt]
+[complete Korean context line from the second excerpt]
+
+핵심 표현: [second target expression]
+뜻: [concise English meaning in context]
+뉘앙스: [short Korean/English nuance or register note]
+예문: [one natural tutor-created Korean example]
+
+3) 출처: [source title]
+출처 링크: [exact direct https:// URL used]
+유형: [Gemini video excerpt / written Korean]
+시간: [approximate timestamp; omit for written sources]
+맥락: [short Korean explanation of the situation]
+[complete Korean context line from the third excerpt]
+[complete Korean context line from the third excerpt]
+
+핵심 표현: [third target expression]
+뜻: [concise English meaning in context]
+뉘앙스: [short Korean/English nuance or register note]
+예문: [one natural tutor-created Korean example]
 ```
 
-For a Naver or other written source, keep the same shape, label it as `유형: written Korean`, and use the exact article URL in `출처 링크:`. There is no practice-prompt field. Before sending, check that no placeholder remains and that every numbered mine has its own direct `https://` URL.
+Before sending, count the numbered blocks: there must be 3–5, unless the source-limitation exception above applies. Check that every mine has its own direct `https://` source URL on the `출처 링크:` line, matching the video inspected or article fetched, and that no placeholders remain. A title or timestamp cannot replace the link: discard unlinked mines. If space is tight, shorten explanations or reduce five mines to three; do not cut source lines or silently collapse the batch to one mine.
 
-For each mine, give:
+## 5. Save compact memories
 
-- the complete Korean context excerpt, followed by a separate `핵심 표현:` label and a natural English gloss of that expression in context;
-- the source title and the exact direct URL used for the source (the YouTube video URL passed to `youtube_video_excerpt`, or the Naver/article URL fetched with `web_fetch`);
-- one or two useful words or grammar notes, including register or nuance;
+Save only the short sentence/context, source URL/title, useful vocabulary or grammar, date, and current state. Keep discoveries **Unseen** until the learner engages with or adopts them; receiving a digest alone is not adoption.
 
-Put the URL on its own plain-text line labelled `출처 링크:` so it remains clickable in Telegram and the TUI. Before sending, verify that every numbered mine has an `https://` URL matching its source. If the exact reference URL is unavailable, discard that mine and find another source or say that mining was unavailable; never present an unlinked mine.
-
-Keep the response roughly 70% Korean and 30% English, with Korean examples always in Hangul and no romanization. English glosses explain meaning; they never contain a Korean pronunciation spelling. Use plain text that renders reliably in Telegram and the TUI: short labels and numbered items are fine, but avoid Markdown headings (`#`), blockquotes (`>`), horizontal rules (`---`), tables, nested lists, and decorative bold or italics. Do not cut a source excerpt to make it fit; return fewer mines instead. Keep quoted material short and never reproduce a full article, transcript, or video script. Make clear when the source is written Korean rather than speech.
-
-Use a compact layout such as: `오늘의 문장`, `1) 출처:`, `출처 링크:`, `시간:`, `맥락:`, `핵심 표현:`, `뜻:`, and `예문:`. Keep the Korean excerpt on its own lines so the surrounding exchange remains readable. Identify the target expression with the label rather than changing the source wording with Markdown markers.
-
-## Memory and state
-
-Write only a compact Supermemory record containing the sentence, source URL/title, useful vocabulary or grammar, date, and current state. Never store a full source or transcript. If the learner explicitly adopts a mined item as **Learning**, update the canonical `EVE_KOREAN_LEARNING_PILE` record instead of creating a separate Learning-item memory. The private tutor's `add_memory` call is automatically approved; do not claim a sentence was saved until the tool succeeds. An automatically generated digest does not by itself move an item from **Unseen** to **Learning**; record that transition only when the learner engages with or explicitly adopts it.
+When an item becomes **Learning**, update the canonical `EVE_KOREAN_LEARNING_PILE` using the system's memory-update procedure, not a separate Learning-item record. `add_memory` is automatically approved for this private tutor, but only claim a save after the tool succeeds. Never store a full source or transcript.
