@@ -21,12 +21,12 @@ function isVideoExcerptResult(value: unknown): boolean {
 
 export default defineEval({
   description:
-    "Sentence mining loads its skill, routes a supplied YouTube video through the optional video-excerpt tool, and cites the exact source URL.",
+    "The /mine alias loads sentence mining, routes a supplied YouTube video through the optional video-excerpt tool, and cites the exact source URL.",
   tags: ["sentence-mine", "youtube", "network"],
   timeoutMs: 90_000,
   async test(test) {
     await test.send(
-      `Use the sentence-mine skill and call youtube_video_excerpt on exactly this URL: ${videoUrl}. Try to return 3–5 fresh Korean mines when the tool provides enough distinct visible Korean caption lines; return fewer only when the source cannot safely support more. Include the exact URL on a separate 출처 링크: line for every mine. Do not use a title, description, or search snippet as spoken-language evidence.`,
+      `/mine ${videoUrl}. Try to return 3–5 fresh Korean mines when the tool provides enough distinct visible Korean caption lines; return fewer only when the source cannot safely support more. Include the exact URL on a separate 출처 링크: line for every mine. Do not use a title, description, or search snippet as spoken-language evidence.`,
     );
 
     test.succeeded();

@@ -1,11 +1,11 @@
 ---
 name: sentence-mine
-description: Mine short, natural Korean sentences from YouTube or Naver media for fresh lessons and daily digests.
+description: Use for /mine or explicit requests to mine short, natural Korean sentences from YouTube or Naver media for fresh lessons and daily digests.
 ---
 
 # Korean sentence mining
 
-Use this skill for an explicit request to find or mine Korean examples from YouTube or Naver, or a scheduled sentence digest. Discover fresh material; use `daily-lesson` to review stored Learning items.
+Use this skill for `/mine`, an explicit request to find or mine Korean examples from YouTube or Naver, or a scheduled sentence digest. Discover fresh material; use `daily-lesson` to review stored Learning items.
 
 ## 1. Recall preferences and discover sources
 
