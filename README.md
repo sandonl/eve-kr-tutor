@@ -45,6 +45,8 @@ The Telegram channel is already wired as a native Eve channel. Create a bot with
 TELEGRAM_BOT_TOKEN=123456:your-bot-token
 TELEGRAM_BOT_USERNAME=your_bot
 TELEGRAM_ALLOWED_USER_ID=123456789
+# Optional explicit destination for the daily lesson schedule.
+TELEGRAM_CHAT_ID=123456789
 TELEGRAM_WEBHOOK_SECRET_TOKEN=choose-a-random-secret
 ```
 
@@ -64,6 +66,16 @@ curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
 
 For local testing, expose `bun run dev` through an HTTPS tunnel and use that tunnel URL in `setWebhook`; Telegram cannot deliver webhooks to `localhost`. Send `/start` to the bot before expecting a scheduled digest—the Bot API does not let bots initiate a new private chat.
 
+### Daily lesson schedule
+
+`agent/schedules/daily-lesson.ts` declares a daily production cron that sends a lesson to `TELEGRAM_CHAT_ID`. For a private chat, it falls back to `TELEGRAM_ALLOWED_USER_ID` when the explicit chat ID is omitted. The default schedule is `22:00 UTC`, approximately 08:00 in Melbourne during standard time and 09:00 during daylight time. Vercel evaluates cron expressions in UTC.
+
+The schedule targets up to 10 current `Learning` entries from the numbered `EVE_KOREAN_LEARNING_PILE` state index, includes an example sentence for each, and leaves `Unseen` and `Seen` entries out of scheduled review. `eve dev` does not run cron automatically; trigger one local run with:
+
+```sh
+curl -X POST http://localhost:2000/eve/v1/dev/schedules/daily-lesson
+```
+
 ## Run
 
 ```sh
@@ -75,12 +87,12 @@ Try:
 
 1. `카페에서 주문하는 상황으로 자연스럽게 대화해 보자.`
 2. `내 표현을 더 자연스럽게 고쳐 줘.`
-3. `/daily-lesson` to review current Learning words with example sentences.
+3. `/lesson` to review current Learning words with example sentences.
 4. `/mine` or `/sentence-mine` to find 3–5 source-linked, everyday Korean examples.
 5. `Remember the new words we covered today so you don't teach them as new next time.`
 6. Start another Eve session and ask: `Choose some useful vocabulary that we have not covered before.`
 
-Compact Supermemory writes are automatically approved for this private tutor. The current Learning pile lives in one canonical `EVE_KOREAN_LEARNING_PILE` record, which daily lessons can paginate and update as states change; sentence mining uses the learner's saved 2k frequency-list preference as a soft familiarity filter.
+Compact Supermemory writes are automatically approved for this private tutor. The canonical `EVE_KOREAN_LEARNING_PILE` record is a numbered state index: each tracked item keeps a stable `#0001`-style number and exactly one `Unseen`, `Learning`, or `Seen` state. Daily lessons select up to 10 `Learning` entries; sentence mining uses the learner's saved 2k frequency-list preference as a soft familiarity filter.
 
 ## Project shape
 
@@ -91,6 +103,7 @@ agent/
 ├── channels/eve.ts             local TUI and HTTP channel
 ├── channels/telegram.ts        Telegram webhook channel
 ├── connections/supermemory.ts  hosted Supermemory MCP connection
+├── schedules/daily-lesson.ts   daily Learning-pile Telegram delivery
 ├── skills/daily-lesson/        review current Learning items with examples
 ├── skills/sentence-mine/       source-linked Korean sentence mining
 └── tools/                       dangerous defaults disabled; web and YouTube excerpt tools enabled for sentence mining
