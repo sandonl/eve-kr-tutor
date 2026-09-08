@@ -8,6 +8,14 @@ This context defines how the tutor describes and tracks the learner's familiarit
 A Korean word, expression, or grammar structure whose familiarity is tracked.
 _Avoid_: Vocabulary item when referring to grammar structures as well.
 
+**Language-state index**:
+The single learner record that gives each tracked language item a stable identity and one current familiarity state.
+_Avoid_: Separate word list, page, or per-item memory.
+
+**Item number**:
+The stable learner-facing identifier for a language item, used to refer to it even when the current Learning pile changes.
+_Avoid_: Daily position, rank, or temporary list number.
+
 **Unseen**:
 A language item the learner has not encountered before. It is a candidate for introduction and becomes Learning when the learner chooses to study it.
 _Avoid_: Unknown as a separate state; it is only a learner-facing synonym for Unseen.
@@ -21,7 +29,7 @@ A language item the learner recognizes and does not want proactively recommended
 _Avoid_: Mastered, known; those imply a stronger level of command than this state requires.
 
 **Learning pile**:
-The set of language items currently in Learning state.
+The set of language-state index entries currently marked Learning.
 _Avoid_: Vocabulary list when grammar structures are included.
 
 **Sentence mine**:
