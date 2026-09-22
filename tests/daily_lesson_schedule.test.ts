@@ -40,6 +40,7 @@ const runScheduleWithFakeDelivery = async (
       send: async (message, options) => {
         sentMessage = typeof message === "string" ? message : "";
         assert.equal(options.auth, appAuth);
+        assert.equal(options.turnPolicy, "queue");
         sentAuth = options.auth ?? undefined;
         return undefined as never;
       },
@@ -65,7 +66,7 @@ const runScheduleWithFakeDelivery = async (
 
 test("daily lesson schedule runs every day and sends a ten-item lesson prompt", async () => {
   process.env.TELEGRAM_CHAT_ID = "123456789";
-  delete process.env.TELEGRAM_ALLOWED_USER_ID;
+  process.env.TELEGRAM_ALLOWED_USER_ID = "123456789";
 
   const result = await runScheduleWithFakeDelivery("123456789");
 
@@ -73,6 +74,23 @@ test("daily lesson schedule runs every day and sends a ten-item lesson prompt", 
   assert.match(result.message, /Aim for 10 currently Learning items/);
   assert.match(result.message, /EVE_KOREAN_LEARNING_PILE/);
   assert.match(result.message, /stable item numbers/);
+});
+
+test("invalid or unauthorised destinations fail before any channel dispatch", async () => {
+  const appAuth = {
+    attributes: {}, authenticator: "test", principalId: "test", principalType: "runtime",
+  };
+  for (const [allowedUserId, chatId] of [
+    ["", "123456789"], ["-123", ""], ["abc", ""], ["123456789", "987654321"],
+  ]) {
+    process.env.TELEGRAM_ALLOWED_USER_ID = allowedUserId;
+    process.env.TELEGRAM_CHAT_ID = chatId;
+    await assert.rejects(() => dailyLessonSchedule.run({
+      appAuth,
+      to: () => { throw new Error("Unexpected channel dispatch"); },
+      waitUntil: () => { throw new Error("Unexpected background task"); },
+    }), /TELEGRAM_(?:ALLOWED_USER_ID|CHAT_ID)/);
+  }
 });
 
 test("daily lesson schedule can use the private allowlist as its Telegram destination", async () => {

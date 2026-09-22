@@ -2,19 +2,16 @@ import { defineSchedule } from "eve/schedules";
 import telegram from "../channels/telegram.js";
 
 const getTelegramChatId = (): string => {
-  const configuredChatId = process.env.TELEGRAM_CHAT_ID?.trim();
-  if (configuredChatId) {
-    return configuredChatId;
-  }
-
   const allowedUserId = process.env.TELEGRAM_ALLOWED_USER_ID?.trim();
-  if (allowedUserId) {
-    return allowedUserId;
+  if (!allowedUserId || !/^[1-9]\d*$/.test(allowedUserId)) {
+    throw new Error("A positive numeric TELEGRAM_ALLOWED_USER_ID is required for daily lessons.");
   }
-
-  throw new Error(
-    "TELEGRAM_CHAT_ID or TELEGRAM_ALLOWED_USER_ID is required for the daily lesson schedule.",
-  );
+  const configuredChatId = process.env.TELEGRAM_CHAT_ID?.trim();
+  // Proactive sends bypass the channel's inbound allowlist.
+  if (configuredChatId && configuredChatId !== allowedUserId) {
+    throw new Error("TELEGRAM_CHAT_ID must match TELEGRAM_ALLOWED_USER_ID for this private tutor.");
+  }
+  return allowedUserId;
 };
 
 const dailyLessonPrompt = `Run the learner's scheduled daily Korean lesson now.
@@ -32,6 +29,7 @@ export default defineSchedule({
     waitUntil(
       to(telegram, { chatId: getTelegramChatId() }).send(dailyLessonPrompt, {
         auth: appAuth,
+        turnPolicy: "queue",
       }),
     );
   },
