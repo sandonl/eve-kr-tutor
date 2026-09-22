@@ -1,6 +1,6 @@
 # eve-kr-tutor
 
-A small Eve agent for practising Korean. Local development and the Vercel deployment use Gemini 3.5 Flash through Vercel AI Gateway. Supermemory provides learning context that can survive across conversations.
+A small Eve agent for practising Korean. Local development and the Vercel deployment use Gemini 3.8 Flash through Vercel AI Gateway. Supermemory provides learning context that can survive across conversations.
 
 ## Architecture
 
@@ -68,6 +68,10 @@ For local testing, expose `bun run dev` through an HTTPS tunnel and use that tun
 
 ### Daily lesson schedule
 
+Proactive delivery requires a positive numeric `TELEGRAM_ALLOWED_USER_ID`. If `TELEGRAM_CHAT_ID` is set, it must match that private user ID; a mismatched destination fails before dispatch. Scheduled lessons use `turnPolicy: "queue"` so they wait behind an active conversation turn.
+
+Duplicate daily invocations are not yet suppressed. Reliable suppression requires an atomic claim in a shared durable store; Supermemory search/save is not such a store. Item numbering and daily selection currently follow model instructions rather than database constraints.
+
 `agent/schedules/daily-lesson.ts` declares a daily production cron that sends a lesson to `TELEGRAM_CHAT_ID`. For a private chat, it falls back to `TELEGRAM_ALLOWED_USER_ID` when the explicit chat ID is omitted. The default schedule is `22:00 UTC`, approximately 08:00 in Melbourne during standard time and 09:00 during daylight time. Vercel evaluates cron expressions in UTC.
 
 The schedule targets up to 10 current `Learning` entries from the numbered `EVE_KOREAN_LEARNING_PILE` state index, includes an example sentence for each, and leaves `Unseen` and `Seen` entries out of scheduled review. `eve dev` does not run cron automatically; trigger one local run with:
@@ -127,4 +131,10 @@ bun run build    # Build the agent
 
 The YouTube evals are tagged `network` because they call YouTube and the model. Run them against a running `bun run dev` server, or let `eve eval` start one when no server is already running. Use `--exclude-tag network` for a local deterministic-only eval run.
 
-`agent/agent.ts` and the YouTube video-excerpt tool both use `google/gemini-3.5-flash-lite` through Vercel AI Gateway. The excerpt tool is a small structured-output call so sentence mining can reject non-Korean or unavailable video results and fall back cleanly.
+`agent/agent.ts` and the YouTube video-excerpt tool both use `google/gemini-3.8-flash` through Vercel AI Gateway. The excerpt tool is a small structured-output call so sentence mining can reject non-Korean or unavailable video results and fall back cleanly.
+
+## Observability
+
+The agent emits correlated JSON runtime logs for turns, model steps, tool calls,
+and final Telegram delivery. See [the investigation guide](docs/observability.md)
+for querying logs, privacy boundaries, and what the records do—and do not—prove.
