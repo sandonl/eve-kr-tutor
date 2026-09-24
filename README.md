@@ -5,13 +5,21 @@ A small Eve agent for practising Korean. Local development and the Vercel deploy
 ## Architecture
 
 ```text
-learner → Eve session → Gemini 3.5 Flash
-                    └→ Supermemory MCP
-                         ├→ search_memory (automatic)
-                         └→ add_memory (automatic)
+Telegram / local chat ─┐
+Daily lesson cron ────┴→ Eve session
+                         ├→ AI Gateway → Gemini 3.8 Flash
+                         ├→ Supermemory MCP → learning history and word states
+                         ├→ Web search / YouTube excerpt tools
+                         └→ Reply → Telegram / local chat
+
+Eve lifecycle hooks + Telegram delivery
+  → @eve-kr-tutor/observability (Effect v4)
+  → native JSON logs → local console / Vercel runtime logs
 ```
 
-Eve owns the conversation, tools, approvals, and session history. AI Gateway supplies the Gemini model route. Supermemory is a separate long-term memory service.
+Eve owns the conversation, tools, approvals, schedules, and session history. `agent/model.ts` selects `google/gemini-3.8-flash` through Vercel AI Gateway for both the tutor and YouTube excerpts. Supermemory stores long-term learning context; there is no separate application database.
+
+The observability package uses Effect's native logger, annotations, and operation spans. Agent adapters select safe metadata and correlate turns, model usage, tool calls, and Telegram delivery without logging message or memory bodies. Logging failures do not fail the conversation; business failures still propagate. These logs aid investigation—they do not validate the model's source claims or export distributed traces to a collector.
 
 ## Setup
 
@@ -102,16 +110,21 @@ Compact Supermemory writes are automatically approved for this private tutor. Th
 
 ```text
 agent/
-├── agent.ts                    subscription-backed model and limits
+├── agent.ts                    agent configuration and limits
+├── model.ts                    shared AI Gateway model selection
 ├── instructions.md             tutor behaviour and memory policy
 ├── channels/eve.ts             local TUI and HTTP channel
 ├── channels/telegram.ts        Telegram webhook channel
 ├── connections/supermemory.ts  hosted Supermemory MCP connection
+├── hooks/observability.ts      Eve lifecycle event adapter
+├── lib/                       delivery, diagnostics, and video excerpt logic
 ├── schedules/daily-lesson.ts   daily Learning-pile Telegram delivery
 ├── skills/daily-lesson/        review current Learning items with examples
 ├── skills/sentence-mine/       source-linked Korean sentence mining
 └── tools/                       dangerous defaults disabled; web and YouTube excerpt tools enabled for sentence mining
-evals/                            behavioural checks
+packages/observability/         shared native Effect v4 logging and operation observation
+tests/                         deterministic behaviour tests
+evals/                         behavioural checks using the agent
 docs/eve-deep-dive.md            notes on Eve's architecture
 ```
 
@@ -123,8 +136,8 @@ docs/eve-deep-dive.md            notes on Eve's architecture
 bun run dev      # Start the interactive tutor
 bun run info     # Show the capabilities Eve discovered
 bun run check    # Type-check and validate discovery
-bun test         # Run deterministic YouTube video-excerpt contract tests
-bun run eval     # Run behavioural evals; consumes subscription usage
+bun test         # Test excerpts, scheduled destinations, and observability
+bun run eval     # Run behavioural evals; consumes model/API usage
 bun run eval -- --tag youtube --url http://127.0.0.1:2000/
 bun run build    # Build the agent
 ```
