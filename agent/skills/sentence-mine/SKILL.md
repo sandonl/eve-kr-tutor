@@ -9,8 +9,10 @@ Use this skill for `/mine`, an explicit request to find or mine Korean examples 
 
 ## 1. Recall preferences and discover sources
 
-- Start with one Supermemory `search_memory` query covering preferred YouTube/media sources and the saved 2k frequency-list preference. Supermemory supplies preferences and familiarity checks, never the sentences for this lesson. Ignore stored examples as content, and do not hardcode channel names or infer familiarity from following a channel.
-- Discover videos yourself with Korean `web_search` queries. Do not ask the learner for links; use a supplied URL when they explicitly provide one. Try saved preferred sources in order before generic discovery, favouring YouTube for everyday dialogue and Naver/other written media as alternatives. If no preferences are available, choose an ordinary-life topic.
+- Start with one Supermemory `search_memory` query covering preferred YouTube/media sources and the saved 2k frequency-list preference. Separately recall recent `EVE_KOREAN_MINING_SOURCES` memories and videos already suggested in this conversation. Supermemory supplies preferences, source history, and familiarity checks, never the sentences for this lesson. Ignore stored examples as content, and do not hardcode channel names or infer familiarity from following a channel.
+- Discover videos yourself with Korean `web_search` queries. Do not ask the learner for links; use a supplied URL when they explicitly provide one. Try saved preferred sources before generic discovery, rotating the starting channel toward those least recently suggested unless the learner requests a particular channel. Vary everyday topics and query terms across runs; use recent uploads as one discovery option, not a requirement. If no preferences are available, choose an ordinary-life topic.
+- Before retrieving a candidate video, compare its YouTube video ID against recalled history and this conversation. `watch?v=`, `youtu.be/`, and `/shorts/` links with the same ID identify the same video; timestamps and tracking parameters do not make it new. Search Supermemory for `EVE_KOREAN_MINING_SOURCES` plus the shortlisted IDs to catch older matches, including source URLs in older lesson memories. Skip previously suggested videos unless the learner explicitly asks to revisit one or supplies that video for mining.
+- If search keeps returning used videos, change the topic/query or try another preferred channel rather than reusing them. After two changed-query attempts without usable new candidates, try broader sources or a clearly labeled written alternative. Return fewer mines with a brief limitation note rather than silently repeating videos. If history lookup fails or is incomplete, continue using known history but do not claim a video has never been suggested; a missing search match is not proof of novelty.
 - Fetch source material during this run. Titles, thumbnails, descriptions, headlines, and search snippets are discovery clues, not evidence for a mined sentence.
 
 ## 2. Retrieve usable excerpts
@@ -32,7 +34,7 @@ Use this skill for `/mine`, an explicit request to find or mine Korean examples 
 
 Start directly with the learner-facing result, not planning, instructions, tool commentary, or a draft. Use roughly 70% Korean and 30% English, with no romanization. Use plain-text numbered blocks, no Markdown decoration, and no practice-prompt field.
 
-The template below shows the minimum complete batch: **three numbered mines**, not a single block to send on its own. Add blocks `4)` and `5)` in the same format when additional usable mines are available. Mines may come from the same video or different sources. Fill every placeholder from the retrieved source, except the clearly tutor-created example. Keep the Korean excerpt on its own lines and explain the target with one or two brief meaning, grammar, or register notes.
+The template below shows the minimum complete batch: **three numbered mines**, not a single block to send on its own. Add blocks `4)` and `5)` in the same format when additional usable mines are available. Prefer different videos within a batch; distinct excerpts from the same eligible video are acceptable when useful, especially for an explicit single-video request. Fill every placeholder from the retrieved source, except the clearly tutor-created example. Keep the Korean excerpt on its own lines and explain the target with one or two brief meaning, grammar, or register notes.
 
 ```text
 오늘의 문장
@@ -77,6 +79,8 @@ The template below shows the minimum complete batch: **three numbered mines**, n
 Before sending, count the numbered blocks: there must be 3–5, unless the source-limitation exception above applies. Check that every mine has its own direct `https://` source URL on the `출처 링크:` line, matching the video inspected or article fetched, and that no placeholders remain. A title or timestamp cannot replace the link: discard unlinked mines. If space is tight, shorten explanations or reduce five mines to three; do not cut source lines or silently collapse the batch to one mine.
 
 ## 5. Save compact memories
+
+Once the final batch is selected, save one compact Supermemory source-history memory headed `EVE_KOREAN_MINING_SOURCES`, with the date and one line per unique selected YouTube video: `videoId: ... | title: ... | channel: ... | url: ...`. Record only known source metadata, not every search result or rejected candidate. Keep earlier source-history memories; this is an append-only history, not a replacement learning-state index. It records videos selected for a reply, not proof of Telegram delivery. If saving fails, do not claim the history was saved; still return the usable mines.
 
 Save only the short sentence/context, source URL/title, useful vocabulary or grammar, date, and current state. Keep discoveries **Unseen** until the learner engages with or adopts them; receiving a digest alone is not adoption.
 
